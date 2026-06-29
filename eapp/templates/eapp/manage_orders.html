@@ -1,0 +1,27 @@
+{% extends "eapp/seller_base.html" %}
+{% block title %}Orders - AzizeMart{% endblock %}
+{% block content %}
+<h1>Order Management</h1>
+{% for order in orders %}
+    <div class="admin-panel mb-3">
+        <div class="d-flex justify-content-between flex-wrap gap-2">
+            <div>
+                <h5>Order #{{ order.id }} - {{ order.full_name }}</h5>
+                <p class="text-muted">{{ order.phone }} | {{ order.city }} | Tk {{ order.total }}</p>
+            </div>
+            <form method="post" action="{% url 'update_order_status' order.id %}" class="d-flex gap-2">
+                {% csrf_token %}
+                <select class="form-select" name="status">
+                    {% for value,label in order.STATUS_CHOICES %}<option value="{{ value }}" {% if order.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+                </select>
+                <button class="btn btn-orange btn-sm">Update</button>
+            </form>
+        </div>
+        {% for item in order.items.all %}
+            <p class="mb-1">{{ item.product_name }} x {{ item.quantity }} - Tk {{ item.line_total }}</p>
+        {% endfor %}
+    </div>
+{% empty %}
+    <p>No orders yet.</p>
+{% endfor %}
+{% endblock %}

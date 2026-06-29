@@ -1,0 +1,65 @@
+{% extends "eapp/base.html" %}
+{% block title %}Shop - AzizeMart{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="section-heading mb-4">
+        <h1>All Products</h1>
+    </div>
+    <div class="row g-4">
+        <aside class="col-lg-3">
+            <form class="filter-panel">
+                <input class="form-control mb-3" name="q" value="{{ query }}" placeholder="Search">
+                <select class="form-select mb-3" name="category">
+                    <option value="">All categories</option>
+                    {% for category in categories %}<option value="{{ category.slug }}" {% if selected.category == category.slug %}selected{% endif %}>{{ category.name }}</option>{% endfor %}
+                </select>
+                <select class="form-select mb-3" name="type">
+                    <option value="">All types</option>
+                    {% for type in types %}<option value="{{ type.slug }}" {% if selected.type == type.slug %}selected{% endif %}>{{ type.name }}</option>{% endfor %}
+                </select>
+                <select class="form-select mb-3" name="brand">
+                    <option value="">All brands</option>
+                    {% for brand in brands %}<option value="{{ brand.slug }}" {% if selected.brand == brand.slug %}selected{% endif %}>{{ brand.name }}</option>{% endfor %}
+                </select>
+                <div class="row g-2">
+                    <div class="col"><input class="form-control" name="min_price" value="{{ selected.min_price }}" placeholder="Min"></div>
+                    <div class="col"><input class="form-control" name="max_price" value="{{ selected.max_price }}" placeholder="Max"></div>
+                </div>
+                <select class="form-select my-3" name="size">
+                    <option value="">Any size</option>
+                    {% for size in sizes %}<option value="{{ size.name }}" {% if selected.size == size.name %}selected{% endif %}>{{ size.name }}</option>{% endfor %}
+                </select>
+                <select class="form-select mb-3" name="color">
+                    <option value="">Any color</option>
+                    {% for color in colors %}<option value="{{ color.name }}" {% if selected.color == color.name %}selected{% endif %}>{{ color.name }}</option>{% endfor %}
+                </select>
+                <select class="form-select mb-3" name="sort">
+                    <option value="newest" {% if selected.sort == "newest" %}selected{% endif %}>Newest</option>
+                    <option value="price_low" {% if selected.sort == "price_low" %}selected{% endif %}>Price low to high</option>
+                    <option value="price_high" {% if selected.sort == "price_high" %}selected{% endif %}>Price high to low</option>
+                    <option value="popular" {% if selected.sort == "popular" %}selected{% endif %}>Popularity</option>
+                </select>
+                <button class="btn btn-orange w-100">Apply filters</button>
+            </form>
+        </aside>
+        <div class="col-lg-9">
+            <div class="product-grid three">
+                {% for product in page_obj %}
+                    {% include "eapp/product_card.html" %}
+                {% empty %}
+                    <p>No products matched your filters.</p>
+                {% endfor %}
+            </div>
+            {% if page_obj.paginator.num_pages > 1 %}
+                <nav class="mt-5">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>{% endif %}
+                        <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+                        {% if page_obj.has_next %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>{% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

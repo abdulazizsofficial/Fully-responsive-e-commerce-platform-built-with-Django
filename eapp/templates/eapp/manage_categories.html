@@ -1,0 +1,29 @@
+{% extends "eapp/seller_base.html" %}
+{% block title %}Categories - AzizeMart{% endblock %}
+{% block content %}
+<h1>Category Management</h1>
+<div class="row g-4">
+    <div class="col-lg-6">
+        <form method="post" class="admin-form">
+            {% csrf_token %}
+            <h4>Add Category</h4>
+            {% for field in category_form %}<label>{{ field.label }}</label>{{ field }}{% endfor %}
+            <button name="save_category" class="btn btn-orange mt-3">Save Category</button>
+        </form>
+        <div class="admin-panel mt-3">
+            {% for category in categories %}<p>{{ category.name }}</p>{% endfor %}
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <form method="post" class="admin-form">
+            {% csrf_token %}
+            <h4>Add Product Type</h4>
+            {% for field in type_form %}<label>{{ field.label }}</label>{{ field }}{% endfor %}
+            <button name="save_type" class="btn btn-orange mt-3">Save Type</button>
+        </form>
+        <div class="admin-panel mt-3">
+            {% for type in types %}<p>{{ type.name }}</p>{% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

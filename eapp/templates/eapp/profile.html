@@ -1,0 +1,149 @@
+{% extends "eapp/base.html" %}
+{% block title %}Account - AzizeMart{% endblock %}
+{% block content %}
+<div class="account-page">
+    <section class="account-hero">
+        <div class="container">
+            <div class="account-hero-inner">
+                <div>
+                    <span class="page-kicker">Customer account</span>
+                    <h1>{{ user.get_full_name|default:user.username }}</h1>
+                    <p>Manage profile details, delivery addresses, orders, and saved products from one secure place.</p>
+                </div>
+                <div class="account-identity">
+                    <span>{{ user.username|first|upper }}</span>
+                    <div>
+                        <strong>{{ user.username }}</strong>
+                        <small>{{ user.email|default:"No email added" }}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container account-workspace">
+        <div class="account-metrics">
+            <a href="{% url 'order_history' %}" class="account-metric">
+                <span>Total Orders</span>
+                <strong>{{ order_count }}</strong>
+                <small>Track purchases and delivery status</small>
+            </a>
+            <a href="{% url 'wishlist' %}" class="account-metric">
+                <span>Wishlist</span>
+                <strong>{{ wishlist_count }}</strong>
+                <small>Saved items ready for later</small>
+            </a>
+            <div class="account-metric">
+                <span>Saved Addresses</span>
+                <strong>{{ address_count }}</strong>
+                <small>{% if default_address %}Default: {{ default_address.city }}{% else %}Add a default delivery address{% endif %}</small>
+            </div>
+        </div>
+
+        <div class="row g-4 align-items-start">
+            <div class="col-xl-4">
+                <aside class="account-sidebar">
+                    <a class="active" href="{% url 'profile' %}">Account overview</a>
+                    <a href="{% url 'order_history' %}">Orders</a>
+                    <a href="{% url 'wishlist' %}">Wishlist</a>
+                    <a href="{% url 'cart' %}">Cart</a>
+                    {% if user.is_staff %}<a href="{% url 'dashboard' %}">Seller dashboard</a>{% endif %}
+                </aside>
+
+                <div class="account-card mt-4">
+                    <div class="account-card-head">
+                        <div>
+                            <h4>Recent Orders</h4>
+                            <p>Your latest shopping activity.</p>
+                        </div>
+                        <a href="{% url 'order_history' %}">View all</a>
+                    </div>
+                    <div class="account-order-list">
+                        {% for order in recent_orders %}
+                            <div class="account-order-item">
+                                <div>
+                                    <strong>Order #{{ order.id }}</strong>
+                                    <small>{{ order.created_at|date:"M d, Y" }} / {{ order.payment_method }}</small>
+                                </div>
+                                <div class="text-end">
+                                    <span class="status-pill status-{{ order.status|lower }}">{{ order.status }}</span>
+                                    <strong>Tk {{ order.total }}</strong>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <p class="text-muted mb-0">No orders yet. Your recent purchases will appear here.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-8">
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <form method="post" class="account-card account-form">
+                            {% csrf_token %}
+                            <div class="account-card-head">
+                                <div>
+                                    <h4>Profile Details</h4>
+                                    <p>Keep your contact details up to date.</p>
+                                </div>
+                            </div>
+                            {% for field in profile_form %}
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {{ field }}
+                                {% for error in field.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+                            {% endfor %}
+                            <button name="save_profile" class="btn btn-orange mt-3">Save profile</button>
+                        </form>
+                    </div>
+                    <div class="col-lg-6">
+                        <form method="post" class="account-card account-form">
+                            {% csrf_token %}
+                            <div class="account-card-head">
+                                <div>
+                                    <h4>New Address</h4>
+                                    <p>Add a home, office, or pickup address.</p>
+                                </div>
+                            </div>
+                            {% for field in address_form %}
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {{ field }}
+                                {% for error in field.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+                            {% endfor %}
+                            <button name="save_address" class="btn btn-orange mt-3">Save address</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="account-card mt-4">
+                    <div class="account-card-head">
+                        <div>
+                            <h4>Saved Addresses</h4>
+                            <p>Choose accurate delivery information for faster checkout.</p>
+                        </div>
+                    </div>
+                    <div class="address-grid">
+                        {% for address in addresses %}
+                            <div class="address-card address-card-pro">
+                                <div class="address-card-top">
+                                    <h5>{{ address.full_name }}</h5>
+                                    {% if address.is_default %}<span>Default</span>{% endif %}
+                                </div>
+                                <p>{{ address.street }}</p>
+                                <p>{{ address.city }}, {{ address.postal_code }}, {{ address.country }}</p>
+                                <p class="address-phone">{{ address.phone }}</p>
+                                <a class="text-danger fw-bold" href="{% url 'delete_address' address.id %}">Delete address</a>
+                            </div>
+                        {% empty %}
+                            <div class="empty-state">
+                                <h5>No saved addresses</h5>
+                                <p>Add your delivery address to speed up checkout next time.</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "eapp/base.html" %}
+{% block title %}Wishlist - AzizeMart{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">Wishlist</h1>
+    <div class="product-grid four">
+        {% for item in items %}
+            {% with product=item.product %}{% include "eapp/product_card.html" %}{% endwith %}
+        {% empty %}
+            <p>Your wishlist is empty.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

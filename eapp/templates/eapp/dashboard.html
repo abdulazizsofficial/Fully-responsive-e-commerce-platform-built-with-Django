@@ -1,0 +1,180 @@
+{% extends "eapp/seller_base.html" %}
+{% block title %}Dashboard - AzizeMart{% endblock %}
+{% block content %}
+<div class="dashboard-shell">
+    <div class="dashboard-head">
+        <div>
+            <span class="page-kicker">Seller operations</span>
+            <h1>Business Dashboard</h1>
+            <p>Track sales, fulfillment, inventory risk, and order activity from one workspace.</p>
+        </div>
+        <div class="dashboard-actions">
+            <a class="btn btn-outline-dark" href="{% url 'manage_orders' %}">View Orders</a>
+            <a class="btn btn-orange" href="{% url 'add_product' %}">Add Product</a>
+        </div>
+    </div>
+
+    <div class="metric-grid metric-grid-pro">
+        <div class="metric-card metric-card-primary">
+            <span>Net Revenue</span>
+            <strong>Tk {{ revenue }}</strong>
+            <small>{{ profit_margin }}% margin after purchase cost</small>
+        </div>
+        <div class="metric-card">
+            <span>Gross Sales</span>
+            <strong>Tk {{ total_sales }}</strong>
+            <small>From non-cancelled orders</small>
+        </div>
+        <div class="metric-card">
+            <span>Total Orders</span>
+            <strong>{{ total_orders }}</strong>
+            <small>{{ pending_orders }} pending now</small>
+        </div>
+        <div class="metric-card">
+            <span>Average Order</span>
+            <strong>Tk {{ avg_order_value }}</strong>
+            <small>Delivered order value</small>
+        </div>
+    </div>
+
+    <div class="dashboard-health">
+        <div class="health-card">
+            <span>Fulfillment Rate</span>
+            <strong>{{ fulfillment_rate }}%</strong>
+            <div class="progress dashboard-progress" role="progressbar" aria-label="Fulfillment rate" aria-valuenow="{{ fulfillment_rate }}" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-bar" style="width: {{ fulfillment_rate }}%"></div>
+            </div>
+        </div>
+        <div class="health-card">
+            <span>Active Products</span>
+            <strong>{{ active_products }}</strong>
+            <small>{{ total_products }} total catalog items</small>
+        </div>
+        <div class="health-card health-card-warning">
+            <span>Out of Stock</span>
+            <strong>{{ out_of_stock }}</strong>
+            <small>Needs replenishment</small>
+        </div>
+        <div class="health-card">
+            <span>Purchase Cost</span>
+            <strong>Tk {{ total_purchase_cost }}</strong>
+            <small>Cost attached to fulfilled sales</small>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-xl-8">
+            <div class="admin-panel dashboard-panel">
+                <div class="panel-title-row">
+                    <div>
+                        <h4>Recent Orders</h4>
+                        <p>Latest customer orders and fulfillment status.</p>
+                    </div>
+                    <a href="{% url 'manage_orders' %}">Manage all</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table dashboard-table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Order</th>
+                                <th>Customer</th>
+                                <th>Location</th>
+                                <th>Status</th>
+                                <th class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in recent_orders %}
+                                <tr>
+                                    <td><strong>#{{ order.id }}</strong><small>{{ order.created_at|date:"M d, Y" }}</small></td>
+                                    <td>{{ order.full_name }}<small>{{ order.phone }}</small></td>
+                                    <td>{{ order.city }}</td>
+                                    <td><span class="status-pill status-{{ order.status|lower }}">{{ order.status }}</span></td>
+                                    <td class="text-end fw-bold">Tk {{ order.total }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr><td colspan="5" class="text-center text-muted py-4">No orders yet.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4">
+            <div class="admin-panel dashboard-panel">
+                <div class="panel-title-row">
+                    <div>
+                        <h4>Order Pipeline</h4>
+                        <p>Status distribution across all orders.</p>
+                    </div>
+                </div>
+                <div class="pipeline-list">
+                    <div><span>Pending</span><strong>{{ status_counts.Pending|default:0 }}</strong></div>
+                    <div><span>Processing</span><strong>{{ status_counts.Processing|default:0 }}</strong></div>
+                    <div><span>Shipped</span><strong>{{ status_counts.Shipped|default:0 }}</strong></div>
+                    <div><span>Delivered</span><strong>{{ status_counts.Delivered|default:0 }}</strong></div>
+                    <div><span>Cancelled</span><strong>{{ status_counts.Cancelled|default:0 }}</strong></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-xl-5">
+            <div class="admin-panel dashboard-panel">
+                <div class="panel-title-row">
+                    <div>
+                        <h4>Inventory Alerts</h4>
+                        <p>Products at or below the reorder threshold.</p>
+                    </div>
+                    <a href="{% url 'manage_products' %}">Stock room</a>
+                </div>
+                <div class="alert-list">
+                    {% for product in low_stock %}
+                        <div class="alert-item">
+                            <div>
+                                <strong>{{ product.name }}</strong>
+                                <small>{{ product.category.name }}{% if product.brand %} / {{ product.brand.name }}{% endif %}</small>
+                            </div>
+                            <span class="{% if product.stock == 0 %}danger-count{% else %}warning-count{% endif %}">{{ product.stock }} left</span>
+                        </div>
+                    {% empty %}
+                        <p class="text-muted mb-0">Inventory levels look healthy.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4">
+            <div class="admin-panel dashboard-panel">
+                <div class="panel-title-row">
+                    <div>
+                        <h4>Top Products</h4>
+                        <p>Best movers by units sold.</p>
+                    </div>
+                </div>
+                <div class="rank-list">
+                    {% for product in top_products %}
+                        <div>
+                            <span>{{ forloop.counter }}</span>
+                            <strong>{{ product.product_name }}</strong>
+                            <small>{{ product.units }} units / Tk {{ product.sales }}</small>
+                        </div>
+                    {% empty %}
+                        <p class="text-muted mb-0">Sales ranking will appear after orders arrive.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3">
+            <div class="admin-panel dashboard-panel quick-actions">
+                <h4>Quick Actions</h4>
+                <a href="{% url 'add_product' %}">Create product</a>
+                <a href="{% url 'manage_products' %}">Update inventory</a>
+                <a href="{% url 'manage_categories' %}">Edit categories</a>
+                <a href="{% url 'manage_brands' %}">Manage brands</a>
+                <a href="{% url 'manage_orders' %}">Fulfill orders</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

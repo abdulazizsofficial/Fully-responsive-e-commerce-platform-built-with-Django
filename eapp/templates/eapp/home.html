@@ -1,0 +1,69 @@
+{% extends "eapp/base.html" %}
+{% block title %}AzizeMart - Clothing Store{% endblock %}
+{% block content %}
+<section class="container py-4">
+    <div class="hero">
+        <div>
+            <p class="eyebrow">Exclusive launch 30% off</p>
+            <h1>Fresh fits for men and women</h1>
+            <p class="hero-copy">Discover shirts, jeans, shoes, hoodies, and everyday essentials designed for comfort and confidence.</p>
+            <a class="btn btn-orange" href="{% url 'product_list' %}">Shop now</a>
+            <a class="btn btn-link-dark" href="{% url 'product_list' %}?sort=popular">Explore popular</a>
+        </div>
+        <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=900&q=80" alt="Fashion shopping">
+    </div>
+</section>
+
+<section class="container section-pad">
+    <div class="section-heading">
+        <h2>Popular Products</h2>
+        <a href="{% url 'product_list' %}">See all</a>
+    </div>
+    <div class="product-grid">
+        {% for product in popular %}
+            {% include "eapp/product_card.html" %}
+        {% empty %}
+            <p>Add products from the seller dashboard to fill this section.</p>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="container section-pad">
+    <div class="title-center">
+        <h2>Featured Products</h2>
+        <span></span>
+    </div>
+    <div class="feature-grid">
+        {% for product in featured %}
+            <a class="feature-tile" href="{{ product.get_absolute_url }}" style="background-image: url('{{ product.image }}')">
+                <div>
+                    <h3>{{ product.name }}</h3>
+                    <p>{{ product.description|truncatechars:80 }}</p>
+                    <button class="btn btn-orange btn-sm">Buy now</button>
+                </div>
+            </a>
+        {% empty %}
+            <a class="feature-tile" href="{% url 'product_list' %}?category=women" style="background-image: url('https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=900&q=80')"><div><h3>Women's Collection</h3><p>Soft layers, denim, dresses, and seasonal staples.</p><button class="btn btn-orange btn-sm">Shop</button></div></a>
+            <a class="feature-tile" href="{% url 'product_list' %}?category=men" style="background-image: url('https://images.unsplash.com/photo-1516257984-b1b4d707412e?auto=format&fit=crop&w=900&q=80')"><div><h3>Men's Essentials</h3><p>Shirts, jeans, hoodies, and smart casual pieces.</p><button class="btn btn-orange btn-sm">Shop</button></div></a>
+            <a class="feature-tile" href="{% url 'product_list' %}?type=shoes" style="background-image: url('https://images.unsplash.com/photo-1460353581641-37baddab0fa2?auto=format&fit=crop&w=900&q=80')"><div><h3>Shoes & Sneakers</h3><p>Comfortable pairs for daily movement.</p><button class="btn btn-orange btn-sm">Shop</button></div></a>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="container section-pad">
+    <div class="promo-band">
+        <img src="https://images.unsplash.com/photo-1523398002811-999ca8dec234?auto=format&fit=crop&w=600&q=80" alt="Hoodies">
+        <div>
+            <h2>New arrivals are here</h2>
+            <p>Refresh your wardrobe with breathable fabrics, modern colors, and relaxed silhouettes.</p>
+            <a class="btn btn-orange" href="{% url 'product_list' %}?sort=newest">Shop arrivals</a>
+        </div>
+    </div>
+</section>
+
+<section class="subscribe">
+    <h2>Subscribe now and get 20% off</h2>
+    <p>Join our newsletter for new drops and member-only offers.</p>
+    <form><input type="email" placeholder="Enter your email"><button class="btn btn-orange">Subscribe</button></form>
+</section>
+{% endblock %}

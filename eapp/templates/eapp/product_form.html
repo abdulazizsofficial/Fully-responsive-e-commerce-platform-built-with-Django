@@ -1,0 +1,17 @@
+{% extends "eapp/seller_base.html" %}
+{% block title %}Product Form - AzizeMart{% endblock %}
+{% block content %}
+<h1>{% if product %}Edit{% else %}Add{% endif %} Product</h1>
+<form method="post" enctype="multipart/form-data" class="admin-form">
+    {% csrf_token %}
+    <label>Gallery Images</label>
+    <input class="form-control" type="file" name="gallery_images" multiple>
+    {% for field in form %}
+        <label>{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}<small class="text-muted">{{ field.help_text }}</small>{% endif %}
+        {% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+    {% endfor %}
+    <button class="btn btn-orange mt-3">Save Product</button>
+</form>
+{% endblock %}

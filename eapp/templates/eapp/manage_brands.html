@@ -1,0 +1,19 @@
+{% extends "eapp/seller_base.html" %}
+{% block title %}Brands - AzizeMart{% endblock %}
+{% block content %}
+<h1>Brand Management</h1>
+<div class="row g-4">
+    <div class="col-lg-5">
+        <form method="post" class="admin-form">
+            {% csrf_token %}
+            {% for field in form %}<label>{{ field.label }}</label>{{ field }}{% endfor %}
+            <button class="btn btn-orange mt-3">Save Brand</button>
+        </form>
+    </div>
+    <div class="col-lg-7">
+        <div class="admin-panel">
+            {% for brand in brands %}<p>{{ brand.name }}</p>{% empty %}<p>No brands yet.</p>{% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

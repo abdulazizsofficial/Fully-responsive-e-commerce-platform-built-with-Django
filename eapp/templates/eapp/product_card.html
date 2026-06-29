@@ -1,0 +1,21 @@
+<div class="product-card">
+    <div class="product-media">
+        <a href="{{ product.get_absolute_url }}"><img src="{{ product.image }}" alt="{{ product.name }}"></a>
+        <form method="post" action="{% url 'toggle_wishlist' product.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <button class="heart-btn" title="Wishlist" type="submit">♡</button>
+        </form>
+    </div>
+    <a class="product-name" href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+    <p class="product-desc">{{ product.description|truncatechars:55 }}</p>
+    <div class="rating">4.8 <span>★★★★★</span></div>
+    <div class="d-flex align-items-center justify-content-between">
+        <strong>Tk {{ product.selling_price }}</strong>
+        <form method="post" action="{% url 'add_to_cart' product.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <button class="btn btn-sm btn-outline-secondary rounded-pill" type="submit">Add</button>
+        </form>
+    </div>
+</div>

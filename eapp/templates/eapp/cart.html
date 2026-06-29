@@ -1,0 +1,39 @@
+{% extends "eapp/base.html" %}
+{% block title %}Cart - AzizeMart{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">Shopping Cart</h1>
+    <div class="row g-4">
+        <div class="col-lg-8">
+            {% for item in items %}
+                <div class="line-item">
+                    <img src="{{ item.product.image }}" alt="{{ item.product.name }}">
+                    <div class="flex-grow-1">
+                        <h5>{{ item.product.name }}</h5>
+                        <p class="text-muted mb-1">{{ item.size }} {{ item.color }}</p>
+                        <strong>Tk {{ item.line_total }}</strong>
+                    </div>
+                    <form method="post" action="{% url 'update_cart' item.id %}" class="qty-form">
+                        {% csrf_token %}
+                        <input class="form-control" type="number" min="0" name="quantity" value="{{ item.quantity }}">
+                        <button class="btn btn-outline-secondary btn-sm">Update</button>
+                    </form>
+                    <a class="btn btn-sm btn-link text-danger" href="{% url 'remove_cart' item.id %}">Remove</a>
+                </div>
+            {% empty %}
+                <p>Your cart is empty.</p>
+            {% endfor %}
+        </div>
+        <div class="col-lg-4">
+            <div class="summary-card">
+                <h4>Order Summary</h4>
+                <p><span>Subtotal</span><strong>Tk {{ subtotal }}</strong></p>
+                <p><span>Shipping</span><strong>Tk {{ shipping }}</strong></p>
+                <hr>
+                <p><span>Total</span><strong>Tk {{ total }}</strong></p>
+                <a class="btn btn-orange w-100" href="{% url 'checkout' %}">Checkout</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
